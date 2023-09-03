@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
 import discord
-from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
+from interactions import slash_command, SlashContext
 import zipfile
+import asyncio
 
 # Load environment variables from .env file
 load_dotenv()
@@ -11,17 +11,15 @@ load_dotenv()
 # Retrieve the bot token from an environment variable
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
-# Initialize the bot and slash commands
+# Initialize the bot
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
-slash = SlashCommand(bot, sync_commands=True)
+bot = discord.Client(intents=intents)
 
 @bot.event
 async def on_ready():
     print(f"We have logged in as {bot.user}")
 
-@slash.slash(name="archive",
-             description="Archive the last 100 messages in the current text channel.")
+@slash_command(name="archive", description="Archive the last 100 messages in the current text channel.")
 async def archive(ctx: SlashContext, channel: discord.TextChannel = None):
     if channel is None:
         channel = ctx.channel
